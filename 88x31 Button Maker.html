@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>88x31 Button Maker</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a1a; color: #e0e0e0; display: flex; flex-direction: column; align-items: center; padding: 40px; }
+        .container { background: #2d2d2d; padding: 25px; border: 1px solid #444; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .preview-area { margin-bottom: 25px; text-align: center; }
+        canvas { 
+            border: 1px solid #000; 
+            image-rendering: pixelated; /* Keeps it crisp */
+            background: #000; 
+            margin-bottom: 10px;
+            transform: scale(2); /* Makes it easier to see while editing */
+            margin: 20px 0;
+        }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 300px; }
+        label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #aaa; margin-bottom: 5px; display: block; }
+        input, select { width: 100%; padding: 8px; background: #1a1a1a; color: #fff; border: 1px solid #444; border-radius: 3px; box-sizing: border-box; }
+        .full-width { grid-column: span 2; }
+        button { 
+            grid-column: span 2; margin-top: 10px; padding: 12px; cursor: pointer; 
+            background: #4caf50; color: white; border: none; font-weight: bold; 
+            border-radius: 3px; transition: background 0.2s;
+        }
+        button:hover { background: #45a049; }
+        h1 { margin-bottom: 5px; font-weight: 300; }
+        .subtitle { color: #888; margin-bottom: 30px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <h1>88x31 Button Maker</h1>
+    <p class="subtitle">Create your own retro web banner</p>
+
+    <div class="container">
+        <div class="preview-area">
+            <canvas id="buttonCanvas" width="88" height="31"></canvas>
+        </div>
+
+        <div class="controls">
+            <div class="full-width">
+                <label>Button Text</label>
+                <input type="text" id="text" value="GET HTML" maxlength="15">
+            </div>
+            <div>
+                <label>Text Color</label>
+                <input type="color" id="textColor" value="#ffffff">
+            </div>
+            <div>
+                <label>Border Color</label>
+                <input type="color" id="borderColor" value="#ffffff">
+            </div>
+            <div>
+                <label>BG Top</label>
+                <input type="color" id="bgColor1" value="#222222">
+            </div>
+            <div>
+                <label>BG Bottom</label>
+                <input type="color" id="bgColor2" value="#000000">
+            </div>
+            <div class="full-width">
+                <label>Font Size</label>
+                <select id="fontSize">
+                    <option value="9">9px (Small)</option>
+                    <option value="11" selected>11px (Standard)</option>
+                    <option value="13">13px (Large)</option>
+                </select>
+            </div>
+            <button id="downloadBtn">Download .PNG</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('buttonCanvas');
+        const ctx = canvas.getContext('2d');
+        const inputs = document.querySelectorAll('input, select');
+
+        function drawButton() {
+            const text = document.getElementById('text').value;
+            const textColor = document.getElementById('textColor').value;
+            const bg1 = document.getElementById('bgColor1').value;
+            const bg2 = document.getElementById('bgColor2').value;
+            const border = document.getElementById('borderColor').value;
+            const fontSize = document.getElementById('fontSize').value;
+
+            // 1. Background Gradient
+            const grad = ctx.createLinearGradient(0, 0, 0, 31);
+            grad.addColorStop(0, bg1);
+            grad.addColorStop(1, bg2);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 88, 31);
+
+            // 2. Classic 1px Border
+            ctx.strokeStyle = border;
+            ctx.lineWidth = 1;
+            ctx.strokeRect(0.5, 0.5, 87, 30);
+
+            // 3. Text Rendering
+            ctx.fillStyle = textColor;
+            // Using 'system-ui' or 'Arial' for that clean web look
+            ctx.font = `bold ${fontSize}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Subtle shadow for readability (classic web style)
+            ctx.shadowColor = 'rgba(0,0,0,0.8)';
+            ctx.shadowBlur = 1;
+            ctx.fillText(text.toUpperCase(), 44, 16);
+            ctx.shadowBlur = 0; 
+        }
+
+        // Event listeners for real-time updates
+        inputs.forEach(input => input.addEventListener('input', drawButton));
+
+        // Download logic
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'my-button-88x31.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+
+        // Initial draw
+        drawButton();
+    </script>
+</body>
+</html>
